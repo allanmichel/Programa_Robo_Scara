@@ -1,5 +1,3 @@
-//Programa desenvolvido por Allan Michel Arndt
-
 #include <Stepper.h>  
 #include <Servo.h>
 #include <LiquidCrystal.h>
