@@ -1,0 +1,1290 @@
+//Programa desenvolvido por Allan Michel Arndt
+
+#include <Stepper.h>  
+#include <Servo.h>
+#include <LiquidCrystal.h>
+
+
+//Motor1 é o motor do 2º link, o qual segura a caneta.
+//Motor2 é o motor do 1º link, o qual está fixo na base.
+
+Servo pen; 					//atribuindo nome "pen" ao servo motor
+int delmotor = 0;
+int delpen = 300;
+int cominicio = 10;			//variável que determina a posição de início da escrita
+int numeroletras = 10;      //variável que diz o limite de letras que o robô aceitará como entrada
+int comando = 1; 			//valor fixo que dita a sequência de funções
+int down = 90;				//angulo de caneta abaixada
+int up = 60;                //angulo de caneta erguida
+int grande = 150;           //numero de passos para um traço grande, medio e pequeno
+int medio = 75;
+int medio2 = 37;
+int pequeno = 50;
+int pequeno2 = 48;
+int pequeno3 = 25;
+int diag = 2;               //parâmetros para desenhos na diagonal
+int p1 = -5;
+int p2 = 2;
+int z = 0;
+int zeta = 20;
+int zeta2 = 10;
+int zeta3 = 3;
+int zeta4 = 45;
+int velocidade = 25;        //velocidade dos motores de passo
+int ajuste = 20;            //espaçamento entre as letras
+LiquidCrystal lcd(22, 24, 26, 28, 30, 32);
+
+
+int stringStart, stringStop = 0;  
+int scrollCursor = 16;  
+int tamanho =0;
+
+
+   
+const int passosporvolta = 500; 
+  int contnome = 0; 
+  int contnomeesc=0;  
+    char nome[20];
+    int i=1;
+
+  
+Stepper motor1(passosporvolta, 6,7,8,9); 
+Stepper motor2(passosporvolta, 10,11,12,13);       
+   
+void setup(){  
+  lcd.begin(16, 2); 
+  motor1.setSpeed(velocidade); //Determinando a velocidade do motor  
+  motor2.setSpeed(velocidade); 
+  pen.attach(3);
+//      lcd.begin (16,2);
+
+
+  Serial.begin(9600);
+  Serial.println("Ola, eu sou o robô Bacanão, é como meus criadores me chamam.");
+  Serial.println("Eu aprendi a escrever, e gostaria muito de escrever seu nome");
+  Serial.println("");
+  Serial.println("Me diga, qual é o teu primeiro nome? ");
+  Serial.println("");
+  pen.write(up);
+  lcd.setCursor(0,0);
+  lcd.print("  ROBO BACANAO  ");
+  lcd.setCursor(0,1);
+  lcd.print("Digite seu Nome:");
+
+  pinMode(50, OUTPUT);
+  pinMode(52, OUTPUT);
+  
+  while(Serial.available()==0){}
+  delay(100);
+  while(Serial.available()>0){
+    nome[contnome++]=Serial.read();
+  }
+  for(int i=0;i<numeroletras;i++){
+    Serial.print(nome[i]);
+  }
+	//Codigo que fara a conversao de letras minusculas para maiusculas
+  while(contnomeesc < numeroletras){
+  if(nome[contnomeesc] == 'a'){
+	  nome[contnomeesc]='A';
+	  contnomeesc++;
+  }
+  else if(nome[contnomeesc] == 'b'){
+	  nome[contnomeesc]='B';
+	  contnomeesc++;
+  }
+  else if(nome[contnomeesc] == 'c'){
+	  nome[contnomeesc]='C';
+	  contnomeesc++;
+  }
+  else if(nome[contnomeesc] == 'd'){
+	  nome[contnomeesc]='D';
+	  contnomeesc++;
+  }
+  else if(nome[contnomeesc] == 'e'){
+	  nome[contnomeesc]='D';
+	  contnomeesc++;
+  }
+  else if(nome[contnomeesc] == 'f'){
+	  nome[contnomeesc]='F';
+	  contnomeesc++;
+  }
+  else if(nome[contnomeesc] == 'g'){
+	  nome[contnomeesc]='G';
+	  contnomeesc++;
+  }
+  else if(nome[contnomeesc] == 'h'){
+	  nome[contnomeesc]='H';
+	  contnomeesc++;
+  }
+  else if(nome[contnomeesc] == 'i'){
+	  nome[contnomeesc]='I';
+	  contnomeesc++;
+  }
+  else if(nome[contnomeesc] == 'j'){
+	  nome[contnomeesc]='J';
+	  contnomeesc++;
+  }
+  else if(nome[contnomeesc] == 'k'){
+	  nome[contnomeesc]='K';
+	  contnomeesc++;
+  }
+  else if(nome[contnomeesc] == 'l'){
+	  nome[contnomeesc]='L';
+	  contnomeesc++;
+  }
+  else if(nome[contnomeesc] == 'n'){
+	  nome[contnomeesc]='N';
+	  contnomeesc++;
+  }
+  else if(nome[contnomeesc] == 'o'){
+	  nome[contnomeesc]='O';
+	  contnomeesc++;
+  }
+  else if(nome[contnomeesc] == 'p'){
+	  nome[contnomeesc]='P';
+	  contnomeesc++;
+  }
+  else if(nome[contnomeesc] == 'q'){
+	  nome[contnomeesc]='Q';
+	  contnomeesc++;
+  }
+  else if(nome[contnomeesc] == 'r'){
+	  nome[contnomeesc]='R';
+	  contnomeesc++;
+  }
+  else if(nome[contnomeesc] == 's'){
+	  nome[contnomeesc]='S';
+	  contnomeesc++;
+  }
+  else if(nome[contnomeesc] == 't'){
+	  nome[contnomeesc]='T';
+	  contnomeesc++;
+  }
+  else if(nome[contnomeesc] == 'u'){
+	  nome[contnomeesc]='U';
+	  contnomeesc++;
+  }
+  else if(nome[contnomeesc] == 'v'){
+	  nome[contnomeesc]='V';
+	  contnomeesc++;
+  }
+  else if(nome[contnomeesc] == 'w'){
+	  nome[contnomeesc]='W';
+	  contnomeesc++;
+  }
+  else if(nome[contnomeesc] == 'x'){
+	  nome[contnomeesc]='X';
+	  contnomeesc++;
+  }
+  else if(nome[contnomeesc] == 'y'){
+	  nome[contnomeesc]='Y';
+	  contnomeesc++;
+  }
+  else if(nome[contnomeesc] == 'z'){
+	  nome[contnomeesc]='Z';
+	  contnomeesc++;
+  }
+  else if(nome[contnomeesc] != 'A' && nome[contnomeesc] != 'B' && nome[contnomeesc] != 'C' && nome[contnomeesc] != 'D' && nome[contnomeesc] != 'E' && nome[contnomeesc] != 'F' && nome[contnomeesc] != 'G' && nome[contnomeesc] != 'H' && nome[contnomeesc] != 'I' && nome[contnomeesc] != 'J' && nome[contnomeesc] != 'K' && nome[contnomeesc] != 'L' && nome[contnomeesc] != 'M' && nome[contnomeesc] != 'N' && nome[contnomeesc] != 'O' && nome[contnomeesc] != 'P' && nome[contnomeesc] != 'Q' && nome[contnomeesc] != 'R' && nome[contnomeesc] != 'S' && nome[contnomeesc] != 'T' && nome[contnomeesc] != 'U' && nome[contnomeesc] != 'V' && nome[contnomeesc] != 'W' && nome[contnomeesc] != 'X' && nome[contnomeesc] != 'Y' && nome[contnomeesc] != 'Z') { contnomeesc++;
+}
+  }
+  contnomeesc=0;
+	//Termino de preenchimento do vetor "nome", inicializando processo de escrita.
+  Serial.print(", que nome bacana!");
+  lcd.setCursor(0,1);
+  lcd.print(" Irei Escrever! ");
+  Serial.println("");
+  Serial.println("Veja, irei escrevê-lo para você!");
+
+  
+}  
+   
+void loop()  
+{  
+  int sensor2 = digitalRead(52);
+  int sensor1 = digitalRead(50);
+  //Posição Home
+    
+    if (comando == 1)
+  {
+    if (sensor2 == LOW){
+    motor2.step(-2000);
+    }
+    delay(delmotor);
+    comando++; 
+  } 
+      if (comando == 2)
+  {
+    if (sensor1 == LOW){
+   motor1.step(-2000);
+    }
+    delay(delmotor);
+  pen.write(70);
+    delay(delmotor);
+    comando++; 
+    delay(2000);
+  } 
+
+
+//posicionando caneta
+ if (comando == 3)
+ {
+  motor2.step(cominicio);
+  motor1.step(1000);
+  delay(1000);
+  comando++;
+ }
+// Escrevendo letras
+if (comando == 4){
+  lcd.clear();
+  lcd.setCursor(0,0);
+  lcd.print("  ROBO BACANAO  ");
+  lcd.setCursor(0,1);
+  lcd.print("Letra:");
+  motor1.step(100);
+  motor1.step(grande);
+  motor1.step(-grande);
+while(contnomeesc < numeroletras){
+  if(nome[contnomeesc] == 'A'){
+  Serial.print(i);
+  Serial.print("º letra ");
+  delay(1000);
+  //Escrevendo letra A
+  Serial.println(nome[contnomeesc]);
+  lcd.print(nome[contnomeesc]);
+  pen.write(down);
+  delay(delpen);
+  motor1.step(grande);
+  delay(delmotor);
+  motor2.step(pequeno);
+  delay(delmotor);
+  motor1.step(-grande);
+  pen.write(up);
+  delay(delpen);
+  motor1.step(medio);
+  delay(delpen);
+  pen.write(down);
+  delay(delpen);
+  motor2.step(-pequeno);
+  pen.write(up);
+  delay(delpen);
+  motor1.step(-medio);
+  delay(delmotor);
+  motor2.step(pequeno);
+  delay(delmotor);
+  motor2.step(ajuste);
+  delay(1000);
+  i++;
+  contnomeesc++;
+}
+else if(nome[contnomeesc] == 'B'){
+  Serial.print(i);
+  Serial.print("º letra ");
+  delay(1000);
+  //Escrevendo letra B
+  Serial.println(nome[contnomeesc]);
+  lcd.print(nome[contnomeesc]);
+  pen.write(down);
+  delay(delpen);
+  motor1.step(grande);
+  delay(delmotor);
+  motor2.step(pequeno);
+  delay(delmotor);
+  motor1.step(-pequeno2);
+  delay(1000);
+
+//-diag
+  while(z<zeta2){
+    motor1.step(p1);
+    motor2.step(-p2);
+    delay(10);
+    z++;
+  }
+  delay(delmotor);
+  z=0;
+
+  motor2.step(-pequeno2+10);
+  pen.write(up);
+  delay(delpen);
+  motor2.step(pequeno);
+  delay(delpen);
+  pen.write(down);
+  delay(delpen);
+  
+  //+diag
+  while(z<zeta3){
+    motor1.step(p1);
+    motor2.step(p2);
+    delay(10);
+    z++;
+  }
+  delay(delmotor);
+  motor1.step(-pequeno2);
+  delay(delmotor);
+  motor2.step(-pequeno-5);
+  pen.write(up);
+  delay(delpen);
+  motor2.step(pequeno+5);
+  delay(delmotor);
+  motor2.step(ajuste);
+  delay(1000);
+  i++;
+  contnomeesc++;
+}
+else if(nome[contnomeesc] == 'C'){
+  Serial.print(i);
+  Serial.print("º letra ");
+  delay(1000);
+  //Escrevendo letra C
+  Serial.println(nome[contnomeesc]);
+  lcd.print(nome[contnomeesc]);
+  pen.write(down);
+  delay(delpen);
+  motor1.step(grande);
+  delay(delmotor);
+  motor2.step(pequeno);
+  pen.write(up);
+  delay(delpen);
+  motor2.step(-pequeno);
+  delay(delmotor);
+  motor1.step(-grande);
+  delay(delpen);
+  pen.write(down);
+  delay(delpen);
+  motor2.step(pequeno);
+  pen.write(up);
+  delay(delpen);
+  motor2.step(ajuste);
+  delay(1000);
+  i++;
+  contnomeesc++;
+}
+else if(nome[contnomeesc] == 'D'){
+  Serial.print(i);
+  Serial.print("º letra ");
+  delay(1000);
+  //Escrevendo letra D
+  Serial.println(nome[contnomeesc]);
+  lcd.print(nome[contnomeesc]);
+  pen.write(down);
+  delay(delpen);
+  motor1.step(grande);
+  delay(delmotor);
+  motor2.step(pequeno2);
+  while(z<zeta2){
+    motor1.step(p1);
+    motor2.step(p2);
+    delay(10);
+    z++;
+  }
+  delay(delmotor);
+  z=0;
+  motor1.step(-medio);
+  delay(delmotor);
+    while(z<zeta2){
+    motor1.step(p1);
+    motor2.step(-p2);
+    delay(10);
+    z++;
+  }
+  delay(delmotor);
+  z=0;
+  motor2.step(-pequeno2);
+  pen.write(up);
+  delay(delpen);
+  motor2.step(pequeno);
+  delay(delmotor);
+  motor2.step(ajuste+10);
+  delay(1000);
+  i++;
+  contnomeesc++;
+}
+else if(nome[contnomeesc] == 'E'){
+  Serial.print(i);
+  Serial.print("º letra ");
+  delay(1000);
+  //Escrevendo letra E
+  Serial.println(nome[contnomeesc]);
+  lcd.print(nome[contnomeesc]);
+  pen.write(down);
+  delay(delpen);
+  motor1.step(grande);
+  delay(delmotor);
+  motor2.step(pequeno);
+  pen.write(up);
+  delay(delpen);
+  motor2.step(-pequeno);
+  delay(delmotor);
+  motor1.step(-grande);
+  delay(delpen);
+  pen.write(down);
+  delay(delpen);
+  motor2.step(pequeno);
+  pen.write(up);
+  delay(delpen);
+  motor2.step(-pequeno);
+  delay(delmotor);
+  motor1.step(medio+5);
+  delay(delpen);
+  pen.write(down);
+  delay(delpen);
+  motor2.step(pequeno-15);
+  pen.write(up);
+  delay(delpen);
+  motor1.step(-medio-5);
+  delay(delmotor);
+  motor2.step(ajuste);
+  delay(1000);
+  i++;
+  contnomeesc++;
+}
+else if(nome[contnomeesc] == 'F'){
+  Serial.print(i);
+  Serial.print("º letra ");
+  delay(1000);
+  //Escrevendo letra F
+  Serial.println(nome[contnomeesc]);
+  lcd.print(nome[contnomeesc]);
+  pen.write(down);
+  delay(delpen);
+  motor1.step(grande);
+  delay(delmotor);
+  motor2.step(pequeno);
+  pen.write(up);
+  delay(delpen);
+  motor2.step(-pequeno);
+  delay(delmotor);
+  motor1.step(-medio-20);
+  delay(delpen);
+  pen.write(down);
+  delay(delpen);
+  motor2.step(pequeno);
+  pen.write(up);
+  delay(delpen);
+  motor2.step(-pequeno);
+  delay(delmotor);
+  motor1.step(-medio+20);
+  delay(delmotor);
+  motor2.step(pequeno);
+  delay(delmotor);
+  motor2.step(ajuste);
+  delay(1000);
+  i++;
+  contnomeesc++;
+}
+
+else if(nome[contnomeesc] == 'G'){
+  Serial.print(i);
+  Serial.print("º letra ");
+  delay(1000);
+  //Escrevendo letra G
+  Serial.println(nome[contnomeesc]);
+  lcd.print(nome[contnomeesc]);
+  pen.write(down);
+  delay(delpen);
+  motor1.step(grande);
+  delay(delmotor);
+  motor2.step(pequeno);
+  pen.write(up);
+  delay(delpen);
+  motor2.step(-pequeno);
+  delay(delmotor);
+  motor1.step(-grande);
+  delay(delpen);
+  pen.write(down);
+  delay(delpen);
+  motor2.step(pequeno);
+  delay(delmotor);
+  motor1.step(medio);
+  delay(delmotor);
+  motor2.step(-pequeno3);
+  delay(delpen);
+  pen.write(up);
+  delay(delpen);
+  motor2.step(pequeno3);
+  delay(delmotor);
+  motor1.step(-medio);
+  delay(delmotor);
+  motor2.step(ajuste);
+  delay(1000);
+  i++;
+  contnomeesc++;
+}
+else if(nome[contnomeesc] == 'H'){
+  Serial.print(i);
+  Serial.print("º letra ");
+  delay(1000);
+  //Escrevendo letra H
+  Serial.println(nome[contnomeesc]);
+  lcd.print(nome[contnomeesc]);
+  pen.write(down);
+  delay(delpen);
+  motor1.step(grande);
+  delay(delpen);
+  pen.write(up);
+  delay(delpen);
+  motor2.step(pequeno);
+  delay(delpen);
+  pen.write(down);
+  delay(delpen);
+  motor1.step(-grande);
+  delay(delpen);
+  pen.write(up);
+  delay(delpen);
+  motor1.step(medio);
+  delay(delpen);
+  pen.write(down);
+  delay(delpen);
+  motor2.step(-pequeno);
+  delay(delpen);
+  pen.write(up);
+  delay(delpen);
+  motor1.step(-medio);
+  delay(delmotor);
+  motor2.step(pequeno);
+  delay(delmotor);
+  motor2.step(ajuste);
+  delay(1000);
+  i++;
+  contnomeesc++;
+}
+else if(nome[contnomeesc] == 'I'){
+  Serial.print(i);
+  Serial.print("º letra ");
+  delay(1000);
+  //Escrevendo letra I
+  Serial.println(nome[contnomeesc]);
+  lcd.print(nome[contnomeesc]);
+  pen.write(down);
+  delay(delpen);
+  motor1.step(grande);
+  delay(delpen);
+  pen.write(up);
+  delay(delpen);
+  motor1.step(-grande);
+  delay(delmotor);
+  motor2.step(ajuste);
+  delay(1000);
+  i++;
+  contnomeesc++;
+}
+  else if(nome[contnomeesc] == 'J'){
+  Serial.print(i);
+  Serial.print("º letra ");
+  delay(1000);
+  //Escrevendo letra J
+  Serial.println(nome[contnomeesc]);
+  lcd.print(nome[contnomeesc]);
+  pen.write(down);
+  delay(delpen);
+  motor2.step(pequeno-25);
+  delay(delpen);
+  motor1.step(grande);
+  delay(delpen);
+  pen.write(up);
+  delay(delpen);
+  motor2.step(-pequeno+25);
+  delay(delpen);
+  pen.write(down);
+  delay(delpen);
+  motor2.step(pequeno);
+  delay(delpen);
+  pen.write(up);
+  delay(delpen);
+  motor2.step(-pequeno+25);
+  delay(delmotor);
+  motor1.step(-grande);
+  delay(delmotor);
+  motor2.step(pequeno-25);
+  delay(delmotor);
+  motor2.step(ajuste);
+  delay(1000);
+  i++;
+  contnomeesc++;
+}
+else if(nome[contnomeesc] == 'K'){
+  Serial.print(i);
+  Serial.print("º letra ");
+  delay(1000);
+  //Escrevendo letra K
+  Serial.println(nome[contnomeesc]);
+  lcd.print(nome[contnomeesc]);
+  pen.write(down);
+  delay(delpen);
+  motor1.step(grande);
+  delay(delpen);
+  pen.write(up);
+  delay(delpen);
+  motor1.step(-medio);
+  delay(delpen);
+  pen.write(down);
+  delay(delpen);
+  while(z<zeta){
+  motor1.step(p1);
+  motor2.step(p2);
+  delay(10);
+  z++;
+  }
+  z=0;
+  delay(delpen);
+  pen.write(up);
+  delay(delpen);
+  while(z<zeta){
+  motor1.step(-p1);
+  motor2.step(-p2);
+  delay(10);
+  z++;
+  }
+  z=0;
+  delay(delpen);
+  pen.write(down);
+  delay(delpen);
+  while(z<zeta-8){
+  motor1.step(-p1-3);
+  motor2.step(p2+2);
+  delay(10);
+  z++;
+  }
+  z=0;
+  delay(delpen);
+  pen.write(up);
+  delay(delpen);
+  while(z<zeta-8){
+  motor1.step(p1+3);
+  motor2.step(-p2-2);
+  delay(10);
+  z++;
+  }
+  z=0;
+  while(z<zeta){
+  motor1.step(p1);
+  motor2.step(p2);
+  delay(10);
+  z++;
+  }
+  z=0;
+  delay(delmotor);
+  motor2.step(ajuste);
+  delay(1000);
+  i++;
+  contnomeesc++;
+}
+else if(nome[contnomeesc] == 'L'){
+  Serial.print(i);
+  Serial.print("º letra ");
+  delay(1000);
+  //Escrevendo letra L
+  Serial.println(nome[contnomeesc]);
+  lcd.print(nome[contnomeesc]);
+  pen.write(down);
+  delay(delpen);
+  motor1.step(grande);
+  pen.write(up);
+  delay(delpen);
+  motor1.step(-grande);
+  delay(delpen);
+  pen.write(down);
+  delay(delpen);
+  motor2.step(pequeno);
+  delay(delpen);
+  pen.write(up);
+  delay(delpen);
+  motor2.step(10);
+  delay(1000);
+  i++;
+  contnomeesc++;
+}
+else if(nome[contnomeesc] == 'M'){
+  Serial.print(i);
+  Serial.print("º letra ");
+  delay(1000);
+  //Escrevendo letra M
+  Serial.println(nome[contnomeesc]);
+  lcd.print(nome[contnomeesc]);
+  pen.write(down);
+  delay(delpen);
+  motor1.step(grande);
+  delay(delmotor);
+  while(z<zeta){
+  motor1.step(p1);
+  motor2.step(p2);
+  delay(10);
+  z++;
+  }
+  z=0;
+  pen.write(up);
+  delay(delpen);
+  pen.write(down);
+  delay(delpen);
+  while(z<zeta){
+  motor1.step(-p1);
+  motor2.step(p2);
+  delay(10);
+  z++;
+  }
+  z=0;
+  motor1.step(-grande);
+  pen.write(up);
+  delay(delpen);
+  motor2.step(ajuste);
+  delay(1000);
+  i++;
+  contnomeesc++;
+}
+else if(nome[contnomeesc] == 'N'){
+  Serial.print(i);
+  Serial.print("º letra ");
+  delay(1000);
+  //Escrevendo letra N
+  Serial.println(nome[contnomeesc]);
+  lcd.print(nome[contnomeesc]);
+  pen.write(down);
+  delay(delpen);
+  motor1.step(grande);
+  delay(delmotor);
+  while(z<zeta4){
+  motor1.step(p1+1);
+  motor2.step(p2-1);
+  delay(10);
+  z++;
+  }
+  z=0;
+  delay(delmotor);
+  motor1.step(grande);
+  delay(delpen);
+  pen.write(up);
+  delay(delpen);
+  motor1.step(-grande);
+  delay(delmotor);
+  motor2.step(ajuste);
+  delay(1000);
+  i++;
+  contnomeesc++;
+}
+
+if(nome[contnomeesc] == 'O'){
+  Serial.print(i);
+  Serial.print("º letra ");
+  delay(1000);
+  //Escrevendo letra O
+  Serial.println(nome[contnomeesc]);
+  lcd.print(nome[contnomeesc]);
+  pen.write(down);
+  delay(delpen);
+  motor1.step(grande);
+  delay(delmotor);
+  motor2.step(pequeno);
+  delay(delmotor);
+  motor1.step(-grande);
+  delay(delmotor);
+  motor2.step(-pequeno);
+  delay(delpen);
+  pen.write(up);
+  delay(delpen);
+  motor2.step(pequeno);
+  delay(delmotor);
+  motor2.step(ajuste);
+  delay(1000);
+  i++;
+  contnomeesc++;
+}
+
+else if(nome[contnomeesc] == 'P'){
+  Serial.print(i);
+  Serial.print("º letra ");
+  delay(1000);
+  //Escrevendo letra P
+  Serial.println(nome[contnomeesc]);
+  lcd.print(nome[contnomeesc]);
+  pen.write(down);
+  delay(delpen);
+  motor1.step(grande);
+  delay(delmotor);
+  motor2.step(pequeno);
+  delay(delmotor);
+  motor1.step(-pequeno2);
+  delay(delmotor);
+
+//-diag
+  while(z<zeta2){
+    motor1.step(p1);
+    motor2.step(-p2);
+    delay(10);
+    z++;
+  }
+  delay(delmotor);
+  z=0;
+
+  motor2.step(-pequeno2+10);
+  delay(delpen);
+  pen.write(up);
+  delay(delpen);
+  motor2.step(pequeno);
+  delay(delmotor);
+  
+  //+diag
+  while(z<zeta3){
+    motor1.step(p1);
+    motor2.step(p2);
+    delay(10);
+    z++;
+  }
+  
+  delay(delmotor);
+  motor1.step(-pequeno2);
+  delay(delmotor);
+  motor2.step(ajuste);
+  delay(1000);
+  i++;
+  contnomeesc++;
+}
+if(nome[contnomeesc] == 'Q'){
+  Serial.print(i);
+  Serial.print("º letra ");
+  delay(1000);
+  //Escrevendo letra Q
+  Serial.println(nome[contnomeesc]);
+  lcd.print(nome[contnomeesc]);
+  pen.write(down);
+  delay(delpen);
+  motor1.step(grande);
+  delay(delmotor);
+  motor2.step(pequeno);
+  delay(delmotor);
+  motor1.step(-grande);
+  delay(delmotor);
+  motor2.step(-pequeno);
+  delay(delpen);
+  pen.write(up);
+  delay(delpen);
+  motor1.step(pequeno);
+  delay(delmotor);
+  motor2.step(pequeno-22);
+  delay(delpen);
+  pen.write(down);
+  while(z<zeta){
+  motor1.step(p1);
+  motor2.step(p2);
+  delay(10);
+  z++;
+  }
+  z=0;
+  delay(delmpen);
+  pen.write(up);
+  delay(delmotor);
+  while(z<zeta){
+  motor1.step(-p1);
+  motor2.step(-p2);
+  delay(10);
+  z++;
+  }
+  z=0;
+  delay(delmotor);
+  motor1.step(-pequeno);
+  delay(delmotor);
+  motor2.step(22);
+  delay(delmotor);
+  motor2.step(ajuste);
+  delay(1000);
+  i++;
+  contnomeesc++;
+}
+else if(nome[contnomeesc] == 'R'){
+  Serial.print(i);
+  Serial.print("º letra ");
+  delay(1000);
+  //Escrevendo letra R
+  Serial.println(nome[contnomeesc]);
+  lcd.print(nome[contnomeesc]);
+  pen.write(down);
+  delay(delpen);
+  motor1.step(grande);
+  delay(delmotor);
+  motor2.step(pequeno);
+  delay(delmotor);
+  motor1.step(-pequeno2);
+  delay(delmotor);
+
+//-diag
+  while(z<zeta2){
+    motor1.step(p1);
+    motor2.step(-p2);
+    delay(10);
+    z++;
+  }
+  delay(delmotor);
+  z=0;
+  motor2.step(-pequeno2+10);
+  delay(delpen);
+  pen.write(up);
+  delay(delpen);
+  motor2.step(15);
+  delay(delpen);
+  pen.write(down);
+  delay(delpen);
+  while(z<zeta){
+  motor1.step(p1);
+  motor2.step(p2);
+  delay(10);
+  z++;
+  }
+  pen.write(up);
+  z=0;  
+  delay(delpen);
+  motor2.step(ajuste+10);
+  delay(1000);
+  i++;
+  contnomeesc++;
+}
+else if(nome[contnomeesc] == 'S'){
+  Serial.print(i);
+  Serial.print("º letra ");
+  delay(1000);
+  //Escrevendo letra S
+  Serial.println(nome[contnomeesc]);
+  lcd.print(nome[contnomeesc]);
+  delay(delpen);
+  pen.write(down);
+  delay(delpen);
+  motor2.step(pequeno);
+  delay(delmotor);
+  motor1.step(medio);
+  delay(delmotor);
+  motor2.step(-pequeno);
+  delay(delmotor);
+  motor1.step(medio);
+  delay(delmotor);
+  motor2.step(pequeno);
+  delay(delpen);
+  pen.write(up);
+  delay(delpen);
+  motor1.step(-grande);
+  delay(delmotor);
+  motor2.step(ajuste);
+  delay(1000);
+  i++;
+  contnomeesc++;
+}
+else if(nome[contnomeesc] == 'T'){
+  Serial.print(i);
+  Serial.print("º letra ");
+  delay(1000);
+  //Escrevendo letra T
+  Serial.println(nome[contnomeesc]);
+  lcd.print(nome[contnomeesc]);
+  motor1.step(grande);
+  delay(delpen);
+  pen.write(down);
+  delay(delpen);
+  motor2.step(medio);
+  delay(delpen);
+  pen.write(up);
+  delay(delpen);
+  motor2.step(-medio2);
+  delay(delpen);
+  pen.write(down);
+  delay(delpen);
+  motor1.step(-grande);
+  delay(delpen);
+  pen.write(up);
+  delay(delpen);
+  motor2.step(medio2);
+  delay(delmotor);
+  motor2.step(ajuste);
+  delay(1000);
+  i++;
+  contnomeesc++;
+}
+else if(nome[contnomeesc] == 'U'){
+  Serial.print(i);
+  Serial.print("º letra ");
+  delay(1000);
+  //Escrevendo letra U
+  Serial.println(nome[contnomeesc]);
+  lcd.print(nome[contnomeesc]);
+  pen.write(down);
+  delay(delpen);
+  motor1.step(grande);
+  delay(delpen);
+  pen.write(up);
+  delay(delpen);
+  motor2.step(pequeno);
+  delay(delpen);
+  pen.write(down);
+  delay(delpen);
+  motor1.step(-grande);
+  delay(delmotor);
+  motor2.step(-pequeno);
+  delay(delpen);
+  pen.write(up);
+  delay(delpen);
+  motor2.step(pequeno);
+  delay(delmotor);
+  motor2.step(ajuste);
+  delay(1000);
+  i++;
+  contnomeesc++;
+}
+else if(nome[contnomeesc] == 'V'){
+  Serial.print(i);
+  Serial.print("º letra ");
+  delay(1000);
+  //Escrevendo letra V
+  Serial.println(nome[contnomeesc]);
+  lcd.print(nome[contnomeesc]);
+  motor1.step(grande);
+  pen.write(down);
+  delay(delpen);
+  while(z<zeta4){
+  motor1.step(p1+1);
+  motor2.step(p2-1);
+  delay(10);
+  z++;
+  }
+  z=0;
+  delay(delpen);
+  pen.write(up);
+  delay(delpen);
+  pen.write(down);
+  delay(delpen);
+  while(z<zeta4){
+  motor1.step(-p1-2);
+  motor2.step(p2-1);
+  delay(10);
+  z++;
+  }
+  z=0;
+  delay(delpen);
+  pen.write(up);
+  delay(delpen);
+  motor1.step(-grande);
+  delay(delmotor);
+  motor2.step(ajuste);
+  delay(1000);
+  i++;
+  contnomeesc++;
+}
+else if(nome[contnomeesc] == 'X'){
+  Serial.print(i);
+  Serial.print("º letra ");
+  delay(1000);
+  //Escrevendo letra X
+  Serial.println(nome[contnomeesc]);
+  lcd.print(nome[contnomeesc]);
+  pen.write(down);
+  delay(delpen);
+  while(z<zeta4){
+  motor1.step(-p1-2);
+  motor2.step(p2-1);
+  delay(10);
+  z++;
+  }
+  z=0;
+  delay(delpen);
+  pen.write(up);
+  delay(delpen);
+  while(z<zeta4){
+  motor1.step(p1+2);
+  motor2.step(-p2+1);
+  delay(10);
+  z++;
+  }
+  z=0;
+  delay(delpen);
+  pen.write(up);
+  delay(delpen);
+  motor1.step(grande);
+  delay(delpen);
+  pen.write(down);
+  delay(delpen);
+  while(z<zeta4+10){
+  motor1.step(+p1+2);
+  motor2.step(p2-1);
+  delay(10);
+  z++;
+  }
+  z=0;
+  delay(delpen);
+  pen.write(up);
+  delay(delpen);
+  motor2.step(ajuste);
+  delay(1000);
+  i++;
+  contnomeesc++;
+}
+else if(nome[contnomeesc] == 'Y'){
+  Serial.print(i);
+  Serial.print("º letra ");
+  delay(1000);
+  //Escrevendo letra Y
+  Serial.println(nome[contnomeesc]);
+  lcd.print(nome[contnomeesc]);
+  pen.write(down);
+  delay(delpen);
+  while(z<zeta4){
+  motor1.step(-p1-2);
+  motor2.step(p2-1);
+  delay(10);
+  z++;
+  }
+  z=0;
+  delay(delpen);
+  pen.write(up);
+  delay(delpen);
+  while(z<zeta4){
+  motor1.step(p1+2);
+  motor2.step(-p2+1);
+  delay(10);
+  z++;
+  }
+  z=0;
+  delay(delpen);
+  pen.write(up);
+  delay(delpen);
+  motor1.step(grande);
+  delay(delpen);
+  pen.write(down);
+  delay(delpen);
+  while(z<zeta4-15){
+  motor1.step(+p1+2);
+  motor2.step(p2-1);
+  delay(10);
+  z++;
+  }
+  z=0;
+  delay(delpen);
+  pen.write(up);
+  delay(delpen);
+  motor1.step(-medio-10);
+  delay(delmotor);
+  motor2.step(ajuste);
+  delay(1000);
+  i++;
+  contnomeesc++;
+}
+else if(nome[contnomeesc] == 'W'){
+  Serial.print(i);
+  Serial.print("º letra ");
+  delay(1000);
+  //Escrevendo letra W
+  Serial.println(nome[contnomeesc]);
+  lcd.print(nome[contnomeesc]);
+  pen.write(down);
+  delay(delpen);
+  motor1.step(grande);
+  delay(delpen);
+  pen.write(up);
+  delay(delpen);
+  motor1.step(-grande);
+  delay(delpen);
+  pen.write(down);
+  delay(delpen);
+  while(z<zeta-5){
+  motor1.step(-p1);
+  motor2.step(p2);
+  delay(10);
+  z++;
+  }
+  z=0;  
+  pen.write(up);
+  delay(delpen);
+  pen.write(down);
+  delay(delpen);
+  while(z<zeta){
+  motor1.step(p1);
+  motor2.step(p2);
+  delay(10);
+  z++;
+  }
+  z=0;
+  delay(delpen);
+  pen.write(up);
+  delay(delpen);
+  pen.write(down);
+  delay(delpen);
+  motor1.step(grande);
+  pen.write(up);
+  delay(delpen);
+  motor1.step(-grande);
+  delay(delmotor);
+  motor2.step(ajuste);
+  delay(1000);
+  i++;
+  contnomeesc++;
+}
+else if(nome[contnomeesc] == 'Z'){
+  Serial.print(i);
+  Serial.print("º letra ");
+  delay(1000);
+  //Escrevendo letra Z
+  Serial.println(nome[contnomeesc]);
+  lcd.print(nome[contnomeesc]);
+  motor1.step(grande);
+  delay(delpen);
+  pen.write(down);
+  delay(delpen);
+  motor2.step(pequeno);
+  delay(delpen);
+  pen.write(up);
+  delay(delpen);
+  pen.write(down);
+  delay(delpen);
+  while(z<zeta4-10){
+  motor1.step(p1+1);
+  motor2.step(-p2+1);
+  delay(10);
+  z++;
+  }
+  z=0;
+  delay(delpen);
+  pen.write(up);
+  delay(delpen);
+  pen.write(down);
+  delay(delpen);
+  motor2.step(pequeno);
+  delay(delpen);
+  pen.write(up);
+  delay(delmotor);
+  motor2.step(ajuste);
+  delay(1000);
+  i++;
+  contnomeesc++;
+}
+else if(nome[contnomeesc] == ' '){
+  Serial.print(i);
+  Serial.print("º letra ");
+  delay(1000);
+  //Escrevendo espaço
+  Serial.println(nome[contnomeesc]);
+  lcd.print(nome[contnomeesc]);
+  motor2.step(pequeno);
+  delay(delmotor);
+  motor2.step(ajuste);
+  delay(1000);
+  i++;
+  contnomeesc++;
+}
+else if(nome[contnomeesc] != 'A' && nome[contnomeesc] != 'B' && nome[contnomeesc] != 'C' && nome[contnomeesc] != 'D' && nome[contnomeesc] != 'E' && nome[contnomeesc] != 'F' && nome[contnomeesc] != 'G' && nome[contnomeesc] != 'H' && nome[contnomeesc] != 'I' && nome[contnomeesc] != 'J' && nome[contnomeesc] != 'K' && nome[contnomeesc] != 'L' && nome[contnomeesc] != 'M' && nome[contnomeesc] != 'N' && nome[contnomeesc] != 'O' && nome[contnomeesc] != 'P' && nome[contnomeesc] != 'Q' && nome[contnomeesc] != 'R' && nome[contnomeesc] != 'S' && nome[contnomeesc] != 'T' && nome[contnomeesc] != 'U' && nome[contnomeesc] != 'V' && nome[contnomeesc] != 'W' && nome[contnomeesc] != 'X' && nome[contnomeesc] != 'Y' && nome[contnomeesc] != 'Z') { contnomeesc++;
+}
+}
+comando++;
+}
+
+//Ir para Home
+ if (comando == 5)
+  {
+    Serial.println("Terminei :)");
+    lcd.setCursor(0,1);
+    lcd.print("     PRONTO     ");
+    motor2.step(-2000);
+    delay(1000);
+    comando++; 
+  } 
+      if (comando == 6)
+  {
+    motor1.step(-2000);
+    delay(1000);
+  pen.write(70);
+    delay(1000);
+    comando = 20;
+  } 
+}
